@@ -5,12 +5,12 @@ using UnityEngine;
 public class CameraMovement : MonoBehaviour {
 
     //Pinch zoom constants
-    const float PERSPECTIVE_ZOOM_SPEED = 0.25f;
-    const float DISTANCE_ZOOM_SPEED = 0.25f;
+    const float PERSPECTIVE_ZOOM_SPEED = 0.15f;
+    const float DISTANCE_ZOOM_SPEED = 0.15f;
     const float MIN_CAMERA_DISTANCE = 5f;
     const float MAX_CAMERA_DISTANCE = 10f;
     const float MIN_PERSPECTIVE_SIZE = 15f;
-    const float MAX_PERSPECTIVE_SIZE = 25f;
+    const float MAX_PERSPECTIVE_SIZE = 30f;
 
     //Camera follow player constants
     const float CAMERA_FOLLOW_DAMPING = 1f;
@@ -19,16 +19,20 @@ public class CameraMovement : MonoBehaviour {
     enum CameraState { BASE, ROTATING, BIRDEYE }
     CameraState currentState = CameraState.BASE;
 
+    public bool _isZemljevid { get; set; }
+
     void Update() {
-        MoveCamera();
+        if (!_isZemljevid) return;
+
         if (Input.touchCount == 2) {
+            MoveCamera();
             PinchZoom();
         }
     }
 
     public GameObject target;
     public Vector3 cameraPositonOffset = new Vector3(0, 0, 5f);
-    public Vector3 cameraRotationOffset = new Vector3(25, 0, 0);
+    public Vector3 cameraRotationOffset = new Vector3(30, 0, 0);
     /// <summary>
     /// Makes the camera follow the users character and applies changes to camera position/rotation made by other functions.
     /// </summary>
@@ -88,8 +92,8 @@ public class CameraMovement : MonoBehaviour {
             if (cameraRotationOffset.x == 90) {
                 currentState = CameraState.ROTATING;
             }
-            if (cameraRotationOffset.x < 25) {
-                cameraRotationOffset.x = 25;
+            if (cameraRotationOffset.x < 30) {
+                cameraRotationOffset.x = 30;
                 currentState = CameraState.BASE;
             }
         }

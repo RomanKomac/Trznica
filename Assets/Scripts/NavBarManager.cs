@@ -40,7 +40,8 @@ public class NavBarManager : MonoBehaviour {
             RazstavljalciShadow.effectColor = color;
         });
         ContentImage.enabled = true;
-        ListView.SetActive(true);        
+        ListView.SetActive(true);
+        FindObjectOfType<CameraMovement>()._isZemljevid = false;
     }
 
     public void OnZemljevidButtonClick() {
@@ -53,6 +54,7 @@ public class NavBarManager : MonoBehaviour {
         });
         ListView.SetActive(false);
         ContentImage.enabled = false;
+        FindObjectOfType<CameraMovement>()._isZemljevid = true;
     }
 
     private void Update() {
