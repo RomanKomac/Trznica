@@ -35,6 +35,8 @@ public class PodjetjeListViewAdapter : MonoBehaviour {
         foreach (Podjetje podjetje in podjetja) {
             GameObject novoPodjetje = Instantiate(PodjetjePrefab) as GameObject;
 
+            novoPodjetje.GetComponent<Button>().onClick.AddListener(() => OnPodjetjeClick(podjetje.ime));
+
             novoPodjetje.transform.GetChild(0).GetComponent<Image>().sprite = podjetje.logo;
             novoPodjetje.transform.GetChild(1).GetComponent<Text>().text = podjetje.ime;
             novoPodjetje.transform.GetChild(2).GetChild(0).GetComponent<Text>().text = podjetje.tag1;
@@ -42,5 +44,10 @@ public class PodjetjeListViewAdapter : MonoBehaviour {
 
             novoPodjetje.transform.SetParent(Content.transform, false);
         }        
+    }
+
+    public void OnPodjetjeClick(string ime) {
+        print(ime);
+        FindObjectOfType<NavBarManager>().OnZemljevidButtonClick();
     }
 }
