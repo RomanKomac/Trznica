@@ -49,5 +49,6 @@ public class PodjetjeListViewAdapter : MonoBehaviour {
     public void OnPodjetjeClick(string ime) {
         print(ime);
         FindObjectOfType<NavBarManager>().OnZemljevidButtonClick();
+        FindObjectOfType<CameraMovement>().SetTarget(GameObject.Find(ime));
     }
 }
