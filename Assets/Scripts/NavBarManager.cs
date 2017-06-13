@@ -14,6 +14,8 @@ public class NavBarManager : MonoBehaviour {
     public GameObject ListView;
     public Image ContentImage;
 
+    public GameObject target;
+
     private void Awake() {
         navBar = NavBarDim.transform.GetChild(0).GetComponent<RectTransform>();
     }
@@ -41,7 +43,10 @@ public class NavBarManager : MonoBehaviour {
         });
         ContentImage.enabled = true;
         ListView.SetActive(true);
+
+        FindObjectOfType<PodjetjeListViewAdapter>().HideCurrentPodjetje();
         FindObjectOfType<CameraMovement>()._isZemljevid = false;
+        FindObjectOfType<CameraMovement>().target = target;
     }
 
     public void OnZemljevidButtonClick() {
@@ -54,6 +59,7 @@ public class NavBarManager : MonoBehaviour {
         });
         ListView.SetActive(false);
         ContentImage.enabled = false;
+
         FindObjectOfType<CameraMovement>()._isZemljevid = true;
     }
 

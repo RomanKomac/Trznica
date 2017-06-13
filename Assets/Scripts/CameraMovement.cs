@@ -7,7 +7,7 @@ public class CameraMovement : MonoBehaviour {
     //Pinch zoom constants
     const float PERSPECTIVE_ZOOM_SPEED = 0.15f;
     const float DISTANCE_ZOOM_SPEED = 0.15f;
-    const float MIN_CAMERA_DISTANCE = 5f;
+    const float MIN_CAMERA_DISTANCE = 8f;
     const float MAX_CAMERA_DISTANCE = 10f;
     const float MIN_PERSPECTIVE_SIZE = 15f;
     const float MAX_PERSPECTIVE_SIZE = 30f;
@@ -24,6 +24,7 @@ public class CameraMovement : MonoBehaviour {
     void Update() {
         if (!_isZemljevid) return;
         else MoveCamera();
+        MoveCamera();
         if (Input.touchCount == 2) {
             MoveCamera();
             PinchZoom();
@@ -80,7 +81,7 @@ public class CameraMovement : MonoBehaviour {
         //When in BASE state, the camera zooms out at a 25 degree angle
         if (currentState == CameraState.BASE) {
             cameraPositonOffset.z += deltaMagnitudeDiff * distanceZoomSpeed;
-            cameraPositonOffset.z = Mathf.Clamp(cameraPositonOffset.z, 5, 20);
+            cameraPositonOffset.z = Mathf.Clamp(cameraPositonOffset.z, MIN_CAMERA_DISTANCE, 20);
             if (cameraPositonOffset.z == 20) {
                 currentState = CameraState.ROTATING;
             }
