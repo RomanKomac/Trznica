@@ -23,7 +23,7 @@ public class CameraMovement : MonoBehaviour {
 
     void Update() {
         if (!_isZemljevid) return;
-
+        else MoveCamera();
         if (Input.touchCount == 2) {
             MoveCamera();
             PinchZoom();
