@@ -16,20 +16,31 @@ public class NavBarManager : MonoBehaviour {
 
     public GameObject target;
 
+    private bool inTransition;
+
     private void Awake() {
         navBar = NavBarDim.transform.GetChild(0).GetComponent<RectTransform>();
     }
 
     public void OnMenuButtonClick() {
+        if (inTransition) return;
+
+        inTransition = true;
         NavBarDim.SetActive(true);
-        NavBarDim.GetComponent<Image>().DOFade(0.5f, 1f);
+        NavBarDim.GetComponent<Image>().DOFade(0.5f, 1f).OnComplete(() => {
+            inTransition = false;
+        });
         navBar.DOLocalMoveX(-150, 0.5f).SetEase(Ease.InOutQuad);
     }
 
     public void OnMenuHide() {
+        if (inTransition) return;
+
+        inTransition = true;
         navBar.DOLocalMoveX(-960, 0.5f).SetEase(Ease.InOutQuad);
         NavBarDim.GetComponent<Image>().DOFade(0f, 1f).OnComplete(() => {
             NavBarDim.SetActive(false);
+            inTransition = false;
         });
     }
 
