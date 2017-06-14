@@ -6,6 +6,7 @@ using DG.Tweening;
 
 public class NavBarManager : MonoBehaviour {
 
+    public GameObject compass;
     public GameObject NavBarDim; // [0, 128]
     private RectTransform navBar; // [-960, -150]
     public Shadow RazstavljalciShadow;
@@ -20,6 +21,7 @@ public class NavBarManager : MonoBehaviour {
 
     private void Awake() {
         navBar = NavBarDim.transform.GetChild(0).GetComponent<RectTransform>();
+        compass.SetActive(false);
     }
 
     public void OnMenuButtonClick() {
@@ -58,6 +60,8 @@ public class NavBarManager : MonoBehaviour {
         FindObjectOfType<PodjetjeListViewAdapter>().HideCurrentPodjetje();
         FindObjectOfType<CameraMovement>()._isZemljevid = false;
         FindObjectOfType<CameraMovement>().target = target;
+
+        compass.SetActive(false);
     }
 
     public void OnZemljevidButtonClick() {
@@ -72,6 +76,7 @@ public class NavBarManager : MonoBehaviour {
         ContentImage.enabled = false;
 
         FindObjectOfType<CameraMovement>()._isZemljevid = true;
+        compass.SetActive(true);
     }
 
     private void Update() {
