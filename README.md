@@ -9,5 +9,6 @@ Aplikacija je bila izdelana v sklopu skupinske projektne naloge pri predmetu Osn
 
 ## Avtorstvo
 Roman Komac, romankomac@gmail.com
+
 Žan Ožbot, zan.ozbot@gmail.com
 
