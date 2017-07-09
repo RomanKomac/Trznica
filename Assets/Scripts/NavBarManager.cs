@@ -17,11 +17,24 @@ public class NavBarManager : MonoBehaviour {
 
     public GameObject target;
 
+    public Transform TopBarHolder;
+    public GameObject Search;
+
+    private InputField searchField;
+
+    public Sprite SearchIcon, TimesIcon;
+
+    public GameObject TagSection;
+
+    private bool isSearchShowing;
+
     private bool inTransition;
 
     private void Awake() {
         navBar = NavBarDim.transform.GetChild(0).GetComponent<RectTransform>();
         compass.SetActive(false);
+
+        searchField = TopBarHolder.GetChild(1).GetComponent<InputField>();
     }
 
     public void OnMenuButtonClick() {
@@ -35,8 +48,46 @@ public class NavBarManager : MonoBehaviour {
         navBar.DOLocalMoveX(-150, 0.5f).SetEase(Ease.InOutQuad);
     }
 
+    public void OnSearchClick() {
+        if (!isSearchShowing) { 
+            TopBarHolder.GetChild(0).gameObject.SetActive(false);
+            TopBarHolder.GetChild(1).gameObject.SetActive(true);
+            searchField.Select();
+            Search.GetComponent<Image>().sprite = TimesIcon;
+            isSearchShowing = true;
+        } else {
+            HideSearch();
+        }
+    }
+
+    public void HideSearchButton() {
+        Search.SetActive(false);
+    }
+
+    public void ShowSearchButton() {
+        Search.SetActive(true);
+    }
+
+    public void HideTagSection() {
+        TagSection.SetActive(false);
+    }
+
+    public void ShowTagSection() {
+        TagSection.SetActive(true);
+    }
+
+    public void HideSearch() {
+        TopBarHolder.GetChild(0).gameObject.SetActive(true);
+        TopBarHolder.GetChild(1).gameObject.SetActive(false);
+        Search.GetComponent<Image>().sprite = SearchIcon;
+        isSearchShowing = false;
+        searchField.text = "";
+    }
+
     public void OnMenuHide() {
         if (inTransition) return;
+
+        HideSearch();
 
         inTransition = true;
         navBar.DOLocalMoveX(-960, 0.5f).SetEase(Ease.InOutQuad);
@@ -62,6 +113,8 @@ public class NavBarManager : MonoBehaviour {
         FindObjectOfType<CameraMovement>().target = target;
 
         compass.SetActive(false);
+        ShowTagSection();
+        ShowSearchButton();
     }
 
     public void OnZemljevidButtonClick() {
@@ -75,8 +128,12 @@ public class NavBarManager : MonoBehaviour {
         ListView.SetActive(false);
         ContentImage.enabled = false;
 
+        HideSearch();
+        HideSearchButton();
+
         FindObjectOfType<CameraMovement>()._isZemljevid = true;
         compass.SetActive(true);
+        HideTagSection();
     }
 
     private void Update() {

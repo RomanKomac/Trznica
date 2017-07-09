@@ -12,6 +12,10 @@ public class PodjetjeListViewAdapter : MonoBehaviour {
 
     private Podjetje[] arrayPodjetja;
 
+    public InputField SearchField;
+
+    private Transform contentTransform;
+
     [System.Serializable]
     public class Podjetje {
         public Sprite logo;
@@ -38,8 +42,13 @@ public class PodjetjeListViewAdapter : MonoBehaviour {
 
     private GameObject currentPodjetjeShowing;
 
-	void Start () {
+    private void Awake() {
+        contentTransform = Content.transform;
+    }
+
+    void Start () {
         arrayPodjetja = podjetja.ToArray();
+        TagListViewAdapted tagListViewAdapter = FindObjectOfType<TagListViewAdapted>();
 
         foreach (Podjetje podjetje in podjetja) {
             GameObject novoPodjetje = Instantiate(PodjetjePrefab) as GameObject;
@@ -53,7 +62,10 @@ public class PodjetjeListViewAdapter : MonoBehaviour {
             novoPodjetje.transform.GetChild(2).GetChild(0).GetComponent<Text>().text = podjetje.tag1;
             novoPodjetje.transform.GetChild(3).GetChild(0).GetComponent<Text>().text = podjetje.tag2;
 
-            novoPodjetje.transform.SetParent(Content.transform, false);
+            novoPodjetje.transform.GetChild(2).GetComponent<Image>().color = tagListViewAdapter.GetTagColor(podjetje.tag1);
+            novoPodjetje.transform.GetChild(3).GetComponent<Image>().color = tagListViewAdapter.GetTagColor(podjetje.tag2);
+
+            novoPodjetje.transform.SetParent(contentTransform, false);
         }        
     }
 
@@ -70,5 +82,24 @@ public class PodjetjeListViewAdapter : MonoBehaviour {
         FindObjectOfType<NavBarManager>().OnZemljevidButtonClick();
         currentPodjetjeShowing.SetActive(true);
         FindObjectOfType<CameraMovement>().SetTarget(arrayPodjetja[id].target);
+    }
+
+    public void FilterList(string value) {
+        foreach (Transform podjetje in contentTransform) {
+            string ime = podjetje.GetChild(1).GetComponent<Text>().text.ToLower();
+            string tag1 = podjetje.GetChild(2).GetChild(0).GetComponent<Text>().text;
+            string tag2 = podjetje.GetChild(3).GetChild(0).GetComponent<Text>().text;
+
+            if (ime.Contains(value) || tag1.Contains(value) || tag2.Contains(value)) {
+                podjetje.gameObject.SetActive(true);
+            } else {
+                podjetje.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    public void OnSearchValueChange() {
+        string value = SearchField.text;
+        FilterList(value);        
     }
 }
