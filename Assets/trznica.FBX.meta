@@ -48,6 +48,7 @@ ModelImporter:
     100080: Stojnica28
     100082: Stojnica29
     100084: Stojnica30
+    100086: Sotor007
     400000: Layer:POVEZAVE
     400002: Mapa
     400004: //RootNode
@@ -91,6 +92,7 @@ ModelImporter:
     400080: Stojnica28
     400082: Stojnica29
     400084: Stojnica30
+    400086: Sotor007
     2300000: Mapa
     2300002: Object001
     2300004: Object002
@@ -132,6 +134,7 @@ ModelImporter:
     2300076: Stojnica28
     2300078: Stojnica29
     2300080: Stojnica30
+    2300082: Sotor007
     3300000: Mapa
     3300002: Object001
     3300004: Object002
@@ -173,6 +176,7 @@ ModelImporter:
     3300076: Stojnica28
     3300078: Stojnica29
     3300080: Stojnica30
+    3300082: Sotor007
     4300000: Mapa
     4300002: Object001
     4300004: Object002
@@ -214,6 +218,7 @@ ModelImporter:
     4300076: Stojnica28
     4300078: Stojnica29
     4300080: Stojnica30
+    4300082: Sotor007
     9500000: //RootNode
   materials:
     importMaterials: 1

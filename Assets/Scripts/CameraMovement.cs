@@ -1,16 +1,25 @@
-﻿using System.Collections;
+﻿#define MOBILE
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+    
 public class CameraMovement : MonoBehaviour {
 
+
+
     //Pinch zoom constants
-    const float PERSPECTIVE_ZOOM_SPEED = 0.15f;
-    const float DISTANCE_ZOOM_SPEED = 0.15f;
-    const float MIN_CAMERA_DISTANCE = 8f;
-    const float MAX_CAMERA_DISTANCE = 10f;
+    const float PERSPECTIVE_ZOOM_SPEED = 0.7f;
+    const float DISTANCE_ZOOM_SPEED = 0.07f;
+    const float MIN_CAMERA_DISTANCE = 2f;
+    const float MAX_CAMERA_DISTANCE = 7f;
     const float MIN_PERSPECTIVE_SIZE = 15f;
-    const float MAX_PERSPECTIVE_SIZE = 30f;
+    const float MAX_PERSPECTIVE_SIZE = 20f;
+
+    //Container of numbers
+    public Transform numberCont;
+
+    //Pin
+    public Transform pin;
 
     //Camera follow player constants
     const float CAMERA_FOLLOW_DAMPING = 1f;
@@ -20,37 +29,91 @@ public class CameraMovement : MonoBehaviour {
     CameraState currentState = CameraState.BASE;
 
     public bool _isZemljevid { get; set; }
+    private float touchTime = 0f;
+
+
+    void Start()
+    {
+        foreach (Transform tf in numberCont)
+        {
+            if (tf.GetComponent<TextMesh>() != null)
+                tf.GetComponent<TextMesh>().color = new Vector4(0, 0, 0, Mathf.Clamp((cameraPositonOffset.z - MIN_CAMERA_DISTANCE - 3.5f) / 3f, 0f, 1f));
+        }
+    }
 
     void Update() {
         if (!_isZemljevid) return;
 
         MoveCamera();
 
+        transform.parent.eulerAngles = cameraRotationOffset;
+        transform.localPosition = cameraPositonOffset;
+
         if (Input.touchCount == 2) {
+            touchTime = 0;
             PinchZoom();
         }
+
+#if MOBILE
+        else if (Input.touchCount == 1)
+        {
+            if (Input.GetTouch(0).phase == TouchPhase.Moved || Input.GetTouch(0).phase == TouchPhase.Stationary)
+                touchTime += Time.deltaTime;
+            else if(Input.GetTouch(0).phase == TouchPhase.Ended || Input.GetTouch(0).phase == TouchPhase.Canceled)
+            {
+                if(touchTime > 0.5f)
+                {
+                    RaycastHit hit;
+                    Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+                    if (Physics.Raycast(ray, out hit))
+                    {
+                        pin.position = hit.point;
+                        pin.position += new Vector3(0, 0.2f, 0);
+                    }
+                }
+                touchTime = 0;
+            }
+        }
+#else
+        if (Input.GetMouseButton(0))
+        {
+            touchTime += Time.deltaTime;
+        }
+        if (Input.GetMouseButtonUp(0))
+        {
+            if (touchTime > 0.5f)
+            {
+                RaycastHit hit;
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                if (Physics.Raycast(ray, out hit))
+                {
+                    pin.position = hit.point;
+                    pin.position += new Vector3(0, 0.2f, 0);
+                }
+            }
+            touchTime = 0;
+        }
+
+#endif
+
     }
 
     public GameObject target;
     public Vector3 cameraPositonOffset = new Vector3(0, 0, 5f);
-    public Vector3 cameraRotationOffset = new Vector3(30, 0, 0);
+    public Vector3 cameraRotationOffset = new Vector3(-30, 0, 0);
     /// <summary>
     /// Makes the camera follow the users character and applies changes to camera position/rotation made by other functions.
     /// </summary>
     void MoveCamera() {
-        //Get current camera angle
-        float currentAngle = transform.eulerAngles.y;
-        //Get the angle of our users character
-        float desiredAngle = target.transform.eulerAngles.y;
-        //Slowly adjust the camera angle towards the user characters angle
-        float angle = Mathf.LerpAngle(currentAngle, desiredAngle, Time.deltaTime * CAMERA_FOLLOW_DAMPING);
+        if (target != null)
+        {
+            transform.parent.position = new Vector3(Mathf.Lerp(transform.parent.position.x, target.transform.parent.position.x, 0.02f), 0, Mathf.Lerp(transform.parent.position.z, target.transform.parent.position.z, 0.02f));
+        }
+        else {
+            transform.parent.position = new Vector3(Mathf.Lerp(transform.parent.position.x, 0, 0.02f), 0, Mathf.Lerp(transform.parent.position.z, 0, 0.02f));
+        }
 
-        //Calculate the Quaternion for camera
-        Quaternion rotation = Quaternion.Euler(cameraRotationOffset.x, angle, cameraRotationOffset.z);
-        //Sets the new camera position adjusted for the rotation
-        transform.position = target.transform.position - (rotation * cameraPositonOffset);
-        //Sets the new camera rotation
-        transform.rotation = rotation;
+
     }
 
     public void SetTarget(GameObject target) {
@@ -61,7 +124,7 @@ public class CameraMovement : MonoBehaviour {
     /// Changes cameras field of view based on pinching on the screen.
     /// </summary>
     /// <param name="distanceZoomSpeed"> Optional parameter to set the speed of the distance of the camera changes
-    void PinchZoom(float distanceZoomSpeed = DISTANCE_ZOOM_SPEED) {
+    void PinchZoom(float distanceZoomSpeed = DISTANCE_ZOOM_SPEED, float perspectiveZoomSpeed = PERSPECTIVE_ZOOM_SPEED) {
         
         // Store both touches.
         Touch touchZero = Input.GetTouch(0);
@@ -81,20 +144,29 @@ public class CameraMovement : MonoBehaviour {
         //When in BASE state, the camera zooms out at a 25 degree angle
         if (currentState == CameraState.BASE) {
             cameraPositonOffset.z += deltaMagnitudeDiff * distanceZoomSpeed;
-            cameraPositonOffset.z = Mathf.Clamp(cameraPositonOffset.z, MIN_CAMERA_DISTANCE, 20);
-            if (cameraPositonOffset.z == 20) {
+            cameraPositonOffset.z = Mathf.Clamp(cameraPositonOffset.z, MIN_CAMERA_DISTANCE, MAX_CAMERA_DISTANCE);
+            if (cameraPositonOffset.z == MAX_CAMERA_DISTANCE)
+            {
                 currentState = CameraState.ROTATING;
             }
+            foreach (Transform tf in numberCont)
+            {
+                if(tf.GetComponent<TextMesh>()!=null)
+                    tf.GetComponent<TextMesh>().color = new Vector4(0, 0, 0, Mathf.Clamp((cameraPositonOffset.z - MIN_CAMERA_DISTANCE-3.5f)/3f, 0f, 1f));
+            }
+            
         }
         //In the ROTATING state the camera rotates to a 90 degree angle
         else if (currentState == CameraState.ROTATING) {
-            cameraRotationOffset.x += deltaMagnitudeDiff * distanceZoomSpeed;
-            cameraRotationOffset.x = Mathf.Min(cameraRotationOffset.x, 90);
-            if (cameraRotationOffset.x == 90) {
+            cameraRotationOffset.x -= deltaMagnitudeDiff * perspectiveZoomSpeed;
+            cameraRotationOffset.x = Mathf.Max(cameraRotationOffset.x, -90);
+            //transform.position = new Vector3((90f - cameraRotationOffset.x) / (60f) * transform.position.x, transform.position.y, (90f-cameraRotationOffset.x)/(60f)*transform.position.z);
+            if (cameraRotationOffset.x == -90) {
                 currentState = CameraState.ROTATING;
+                
             }
-            if (cameraRotationOffset.x < 30) {
-                cameraRotationOffset.x = 30;
+            if (cameraRotationOffset.x > -30) {
+                cameraRotationOffset.x = -30;
                 currentState = CameraState.BASE;
             }
         }
