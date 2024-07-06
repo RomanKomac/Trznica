@@ -12,7 +12,4 @@ Aplikacija je bila izdelana v sklopu skupinske projektne naloge pri predmetu Osn
 ![Delovanje aplikacije](https://github.com/RomanKomac/Trznica/blob/master/Gif/flow2.gif?raw=true)
 
 ## Avtorstvo
-Roman Komac, romankomac@gmail.com
-
-Žan Ožbot, zan.ozbot@gmail.com
-
+Roman Komac, Žan Ožbot
